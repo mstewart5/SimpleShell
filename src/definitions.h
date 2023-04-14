@@ -23,7 +23,7 @@ struct command_t {
 
 void printTitle();
 void printPrompt();
-void readCommand();
+void readCommand(char *buffer);
 int parseCommand(char* cLine, struct command_t* cmd);
 int parsePath(char* dirs[]);
 char* lookupPath(char** argv, char** dir);
