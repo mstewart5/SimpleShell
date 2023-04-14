@@ -8,17 +8,19 @@ void printTitle() {
 
 //Build the prompt string to have the machine name, current directory, or other desired info
 void printPrompt() {
-    //promptString = ...;
-    printf("%s :> ");
+    char machineName[1024];
+    char currentDirectory[1024];
+
+    gethostname(machineName, sizeof(machineName));
+    getcwd(currentDirectory, sizeof(currentDirectory));
+    printf("%s:%s>", machineName, currentDirectory);
 }
 
 //This code uses any set of I/O functions, such as those in the stdio library
 //to read the entire command line into the buffer.
 //This implementation is greatly simplified, but it does the job.
-void readCommand() {
-    
-
-    //gets(buffer);
+void readCommand(char *buffer) {
+    fgets(buffer, MAX_ARG_LEN, stdin); // used fgets to avoid warnings every compile
 }
 
 //Determine command name and construct the parameter list. This function will build argv[] and set the argc value.
@@ -58,6 +60,19 @@ int parsePath(char* dirs[]) {
     strcpy(thePath, pathEnvVar);
 
     //Loop to parse thePath. Look for a ':' delimiter between each path name.
+    char *parse = strtok(thePath, ":");
+    int parsedString = 0;
+
+    // parsing every directory using strtok
+    while (parse != NULL) {
+        dirs[parsedString] = malloc(strlen(parse) + 1); // store the parsed paths in dirs[]
+        strcpy(dirs[parsedString], parse);
+        parsedString++;
+        parse = strtok(NULL, ":");
+    }
+
+    return parsedString; // return number of parsed directories
+
 }
 
 //This function searches the directiories identified by the dir arguemnt to see if argv[0] (the file name) appears there.
@@ -68,14 +83,26 @@ char *lookupPath(char **argv, char **dir) {
 
     //check to see if file name is already an absolute path name
     if (*argv[0] == '/') {
-        //...
+        strcpy(pName, argv[0]);
+        if (access(pName, F_OK) == 0) {
+            result = pName;
+            return result;
+        }
     }
 
     //Look in PATH directories.
     //Use access() to see if the file is in a dir.
-    for (int i = 0; i < MAX_PATHS; i++)
-    {
-        //...
+    for (int i = 0; i < MAX_PATHS; i++) {
+        if (dir[i] == NULL) {break;}
+
+        // concatenate directory with command
+        strcpy(pName, dir[i]);
+        strcat(strcat(pName, "/", argv[0]));
+
+        if (access(pName, F_OK) == 0) { // check if directory has command
+            result = pName;
+            return result;
+        }
     }
 
     //Filename not found in any path variable
