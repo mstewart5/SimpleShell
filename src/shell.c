@@ -15,38 +15,38 @@ int main(int argc, char *argv[])
 {
     // ...
     //Shell initialization
-    //...
+    // Initializing all the variables needed for the shell to actually work
+    int i;
+    int pid;
+    char commandLine[MAX_LINE_LEN];
+    char *pathv[MAX_PATHS];
+    struct command_t command;
+    printTitle();
 
-    //printTitle();
+    parsePath(pathv); // Get directory paths from PATH
 
-    //parsePath(pathv); // Get directory paths from PATH
+    while (1) {
+        printPrompt();
 
-    //while (TRUE) {
-    //    printPrompt();
+        //Read the command line and parse it
+        readCommand(commandLine);
+        parseCommand(commandLine, &command);
 
-    //    //Read the command line and parse it
-    //    readCommand(commandLine);
-    //    //...
-    //    parseCommand(commandLine, &command);
-    //    //...
+        //Get the full path name for the file
+        command.argv[command.argc] = NULL;
+        command.name = lookupPath(command.argv, pathv);
 
-    //    //Get the full path name for the file
-    //    command.name = lookupPath(command.argv, pathv);
+        //Create child and execute the command
+        if (pid = fork() == 0) {
+            execv(command.name, command.argv);
+        }
+        //Wait for the child to terminate
+        wait(NULL);
+    
+    }
+        // figure out how to get the shell to terminate eventually - Michael S.
 
-    //    if (command.name == NULL) {
-    //        //report error
-    //        continue;
-    //    }
-
-    //    //Create child and execute the command
-
-    //    //Wait for the child to terminate
-    //   
-    //}
-
- 
-    //Shell termination
-
+/* // I'm commenting this out because this runs commands from a file, not from the linux directories. Should probably just outright get rid of this code - Michael S.
     int i;
     int pid, numChildren;
     int status;
@@ -90,5 +90,5 @@ int main(int argc, char *argv[])
 
     printf("\n\nlaunch: Terminating successfully\n");
     return 0;
-
+*/
 }
