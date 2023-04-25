@@ -97,7 +97,7 @@ char *lookupPath(char **argv, char **dir) {
 
         // concatenate directory with command
         strcpy(pName, dir[i]);
-        strcat(strcat(pName, "/", argv[0]));
+        strcat(strcat(pName, "/"), argv[0]);
 
         if (access(pName, F_OK) == 0) { // check if directory has command
             result = pName;
