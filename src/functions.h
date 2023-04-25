@@ -81,6 +81,9 @@ char *lookupPath(char **argv, char **dir) {
     char *result;
     char pName[MAX_PATH_LEN];
 
+    if (strcmp(argv[0], "exit") == 0)
+        exit(0);
+
     //check to see if file name is already an absolute path name
     if (*argv[0] == '/') {
         strcpy(pName, argv[0]);
