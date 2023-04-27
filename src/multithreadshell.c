@@ -70,6 +70,12 @@ int main() {
 
 }
 
+/*
+execWrapper() exclusively for the multithreaded version of the shell.
+Because pthreads can only take one argument for a function it is necessary to 
+wrap execv() so that it can work given only one argument.
+The argument in question being the commant_t struct.
+*/
 void *execWrapper(void *arg) {
     execv(command.name, command.argv);
     printf("execv failed\n"); // this line will only ever run in the event execv() doesn't work.
