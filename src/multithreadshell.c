@@ -14,8 +14,6 @@ execv() inherently terminates the process it was called in after a successfull c
 No matter how many threads there are, because the threads are contained within one process,
 execv() will still terminate the process which explains why only one shell command can ever be ran. 
 
-It should be noted that the program may take a few runs to get a successful command execution.
-If execv() fails, ctrl+c out of the program and then run it again. Repeat this until the command works. This issue may be a result of some mismanaged memory.
 */
 
 // These headers hold code that is vital to the program functioning properly
@@ -27,6 +25,9 @@ If execv() fails, ctrl+c out of the program and then run it again. Repeat this u
 #include "definitions.h"
 #include "functions.h"
 #include <pthread.h>
+
+struct command_t command; // struct that contains multiple variables vital to parsing the command
+void *execWrapper(void *arg); // prototype for function exclusive to multithread version of shell
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -40,7 +41,7 @@ int main() {
     int pid; // variable to check if fork() was successful or not
     char commandLine[MAX_LINE_LEN]; // stores the user's input
     char *pathv[MAX_PATHS]; // stores the directories holding executable commands
-    struct command_t command; // struct that contains multiple variables vital to parsing the command
+    
     pthread_t cmdExecThread; // initialize a thread data type for executing the command
 
     parsePath(pathv); // get directory paths from PATH
@@ -67,4 +68,9 @@ int main() {
         
     }
 
+}
+
+void *execWrapper(void *arg) {
+    execv(command.name, command.argv);
+    printf("execv failed\n"); // this line will only ever run in the event execv() doesn't work.
 }
