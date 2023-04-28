@@ -47,6 +47,11 @@ int main(int argc, char *argv[])
         readCommand(commandLine);
         parseCommand(commandLine, &command);
 
+        //exit program when user inputs exit
+        if (strcmp(commandLine, "exit") == 0) {
+            exit(0);
+        }
+
         //Get the full path name for the file
         command.argv[command.argc] = NULL;
         command.name = lookupPath(command.argv, pathv);
