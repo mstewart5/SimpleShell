@@ -45,14 +45,13 @@ int main(void) {
   pthread_t tid;
 
   while (1) {
+    printf("mysh> ");
+    read_command(buffer);
     struct command_t* cmd = (struct command_t*)malloc(sizeof(struct command_t));
     if (cmd == NULL) {
       perror("malloc failed");
       exit(EXIT_FAILURE);
     }
-
-    printf("mysh> ");
-    read_command(buffer);
     parse_command(buffer, cmd);
 
     if (strcmp(cmd->name, "exit") == 0) {
@@ -66,10 +65,14 @@ int main(void) {
       exit(EXIT_FAILURE);
     }
 
-    // don't wait for child thread to finish
-    pthread_detach(tid);
+    if (pthread_join(tid, NULL) != 0) {
+      perror("pthread_join failed");
+      free(cmd);
+      exit(EXIT_FAILURE);
+    }
+
+    free(cmd);
   }
 
-  // wait for all child threads to finish
-  pthread_exit(NULL);
+  return 0;
 }
