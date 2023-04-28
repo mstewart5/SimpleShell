@@ -66,14 +66,10 @@ int main(void) {
       exit(EXIT_FAILURE);
     }
 
-    if (pthread_join(tid, NULL) != 0) {
-      perror("pthread_join failed");
-      free(cmd);
-      exit(EXIT_FAILURE);
-    }
-
-    free(cmd);
+    // don't wait for child thread to finish
+    pthread_detach(tid);
   }
 
-  return 0;
+  // wait for all child threads to finish
+  pthread_exit(NULL);
 }
